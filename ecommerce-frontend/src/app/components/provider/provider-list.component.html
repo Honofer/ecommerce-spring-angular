@@ -1,0 +1,94 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3 mb-0 text-gray-800">Gestion des Fournisseurs</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#providerModal" (click)="resetForm()">
+      <i class="bi bi-person-plus"></i> Ajouter un Fournisseur
+    </button>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Entreprise</th>
+              <th>Nom Complet</th>
+              <th>Email</th>
+              <th>Téléphone</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let provider of providers()">
+              <td><strong>{{ provider.company }}</strong></td>
+              <td>{{ provider.lastName }} {{ provider.firstName }}</td>
+              <td>{{ provider.email }}</td>
+              <td>{{ provider.phone }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#providerModal" (click)="editProvider(provider)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteProvider(provider.id!)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="providers().length === 0">
+              <td colspan="5" class="text-center py-4">Aucun fournisseur trouvé</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="providerModal" tabindex="-1" aria-labelledby="providerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="providerModalLabel">{{ isEditMode ? 'Modifier' : 'Ajouter' }} un Fournisseur</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form (ngSubmit)="saveProvider()">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="company" class="form-label">Nom de l'Entreprise</label>
+              <input type="text" class="form-control" id="company" [(ngModel)]="selectedProvider.company" name="company" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="username" class="form-label">Nom d'utilisateur</label>
+              <input type="text" class="form-control" id="username" [(ngModel)]="selectedProvider.username" name="username" required>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="lastName" class="form-label">Nom du Contact</label>
+              <input type="text" class="form-control" id="lastName" [(ngModel)]="selectedProvider.lastName" name="lastName" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="firstName" class="form-label">Prénom du Contact</label>
+              <input type="text" class="form-control" id="firstName" [(ngModel)]="selectedProvider.firstName" name="firstName" required>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" [(ngModel)]="selectedProvider.email" name="email" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="phone" class="form-label">Téléphone</label>
+              <input type="text" class="form-control" id="phone" [(ngModel)]="selectedProvider.phone" name="phone">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,94 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3 mb-0 text-gray-800">Gestion des Utilisateurs</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userModal" (click)="resetForm()">
+      <i class="bi bi-person-plus"></i> Ajouter un Utilisateur
+    </button>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Username</th>
+              <th>Nom Complet</th>
+              <th>Email</th>
+              <th>Téléphone</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users()">
+              <td><code>{{ user.username }}</code></td>
+              <td>{{ user.lastName }} {{ user.firstName }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.phone }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#userModal" (click)="editUser(user)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteUser(user.id)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="users().length === 0">
+              <td colspan="5" class="text-center py-4">Aucun utilisateur trouvé</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="userModalLabel">{{ isEditMode ? 'Modifier' : 'Ajouter' }} un Utilisateur</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form (ngSubmit)="saveUser()">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Username</label>
+              <input type="text" class="form-control" [(ngModel)]="selectedUser.username" name="username" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" [(ngModel)]="selectedUser.email" name="email" required>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Nom</label>
+              <input type="text" class="form-control" [(ngModel)]="selectedUser.lastName" name="lastName" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Prénom</label>
+              <input type="text" class="form-control" [(ngModel)]="selectedUser.firstName" name="firstName" required>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Téléphone</label>
+              <input type="text" class="form-control" [(ngModel)]="selectedUser.phone" name="phone">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Mot de passe {{ isEditMode ? '(Laisser vide pour ne pas changer)' : '' }}</label>
+              <input type="password" class="form-control" [(ngModel)]="selectedUser.password" name="password" [required]="!isEditMode">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

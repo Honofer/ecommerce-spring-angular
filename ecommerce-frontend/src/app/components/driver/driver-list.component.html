@@ -1,0 +1,94 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3 mb-0 text-gray-800">Gestion des Chauffeurs</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#driverModal" (click)="resetForm()">
+      <i class="bi bi-person-plus"></i> Ajouter un Chauffeur
+    </button>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Nom Complet</th>
+              <th>Email</th>
+              <th>Téléphone</th>
+              <th>Adresse</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let driver of drivers()">
+              <td>{{ driver.lastName }} {{ driver.firstName }}</td>
+              <td>{{ driver.email }}</td>
+              <td>{{ driver.phone }}</td>
+              <td>{{ driver.address }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#driverModal" (click)="editDriver(driver)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteDriver(driver.id!)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="drivers().length === 0">
+              <td colspan="6" class="text-center py-4">Aucun chauffeur trouvé</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="driverModal" tabindex="-1" aria-labelledby="driverModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="driverModalLabel">{{ isEditMode ? 'Modifier' : 'Ajouter' }} un Chauffeur</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form (ngSubmit)="saveDriver()">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="lastName" class="form-label">Nom</label>
+              <input type="text" class="form-control" id="lastName" [(ngModel)]="selectedDriver.lastName" name="lastName" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="firstName" class="form-label">Prénom</label>
+              <input type="text" class="form-control" id="firstName" [(ngModel)]="selectedDriver.firstName" name="firstName" required>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="username" class="form-label">Nom d'utilisateur</label>
+              <input type="text" class="form-control" id="username" [(ngModel)]="selectedDriver.username" name="username" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" [(ngModel)]="selectedDriver.email" name="email" required>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="phone" class="form-label">Téléphone</label>
+              <input type="text" class="form-control" id="phone" [(ngModel)]="selectedDriver.phone" name="phone">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="address" class="form-label">Adresse / Localisation</label>
+              <input type="text" class="form-control" id="address" [(ngModel)]="selectedDriver.address" name="address" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

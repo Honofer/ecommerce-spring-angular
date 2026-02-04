@@ -1,0 +1,158 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3 mb-0 text-gray-800">Gestion des Commandes</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#orderModal" (click)="resetForm()">
+      <i class="bi bi-plus-lg"></i> Nouvelle Commande
+    </button>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Réf</th>
+              <th>Client</th>
+              <th>Chauffeur</th>
+              <th>Produits</th>
+              <th>Qté</th>
+              <th>Prix Total</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let order of orders()">
+              <td><strong>{{ order.ref }}</strong></td>
+              <td>{{ order.client?.lastName }} {{ order.client?.firstName }}</td>
+              <td>
+                <span *ngIf="order.driver" class="badge bg-light text-dark border">
+                  <i class="bi bi-bicycle"></i> {{ order.driver.lastName }}
+                </span>
+                <span *ngIf="!order.driver" class="text-muted small">Non assigné</span>
+              </td>
+              <td>
+                <div *ngIf="order.products && order.products.length > 0" class="small">
+                  <div *ngFor="let p of order.products.slice(0, 2)" class="text-nowrap">
+                    • {{ p.ref }}
+                  </div>
+                  <div *ngIf="order.products.length > 2" class="text-muted italic">
+                    + {{ order.products.length - 2 }} autres...
+                  </div>
+                </div>
+                <span *ngIf="!order.products || order.products.length === 0" class="text-muted">Aucun produit</span>
+              </td>
+              <td>{{ order.qteTotal }}</td>
+              <td>{{ order.priceTotal | currency:'XOF':'symbol':'1.0-0' }}</td>
+              <td>
+                <span class="badge" [ngClass]="order.state ? 'bg-success' : 'bg-warning text-dark'">
+                  {{ order.state ? 'Livrée' : 'En attente' }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#orderModal" (click)="editOrder(order)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm" [ngClass]="order.state ? 'btn-outline-warning' : 'btn-outline-success'" (click)="updateState(order)" title="Changer statut">
+                  <i class="bi" [ngClass]="order.state ? 'bi-arrow-counterclockwise' : 'bi-check2-circle'"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger ms-2" (click)="deleteOrder(order.id)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="orders().length === 0">
+              <td colspan="7" class="text-center py-4">Aucune commande trouvée</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="orderModalLabel">{{ isEditMode ? 'Modifier' : 'Nouvelle' }} Commande</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form (ngSubmit)="saveOrder()">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Produits (Plusieurs choix possibles)</label>
+            <div class="border rounded p-3 bg-light" style="max-height: 200px; overflow-y: auto;">
+              <div class="row g-2">
+                <div class="col-md-6" *ngFor="let product of allProducts()">
+                  <div class="form-check card h-100 border-0 shadow-sm">
+                    <div class="card-body p-2 d-flex align-items-center">
+                      <input class="form-check-input me-2" type="checkbox"
+                             [id]="'prod-' + product.id"
+                             [checked]="isProductSelected(product)"
+                             (change)="toggleProduct(product)">
+                      <label class="form-check-label small flex-grow-1" [for]="'prod-' + product.id">
+                        <strong>{{ product.ref }}</strong><br>
+                        <span class="text-muted">{{ product.price | currency:'XOF':'symbol':'1.0-0' }}</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 small text-primary" *ngIf="selectedOrder.products?.length">
+              {{ selectedOrder.products?.length }} produit(s) sélectionné(s)
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Référence</label>
+              <input type="text" class="form-control" [(ngModel)]="selectedOrder.ref" name="ref" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Client</label>
+              <select class="form-select" [(ngModel)]="selectedOrder.client" name="client" [compareWith]="compareClients" required>
+                <option [ngValue]="undefined" disabled>Sélectionner un client</option>
+                <option *ngFor="let client of clients()" [ngValue]="client">
+                  {{ client.lastName }} {{ client.firstName }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Chauffeur (Optionnel)</label>
+              <select class="form-select" [(ngModel)]="selectedOrder.driver" name="driver" [compareWith]="compareDrivers">
+                <option [ngValue]="undefined">Non assigné</option>
+                <option *ngFor="let driver of drivers()" [ngValue]="driver">
+                  {{ driver.lastName }} {{ driver.firstName }}
+                </option>
+              </select>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label">Quantité</label>
+              <input type="number" class="form-control" [(ngModel)]="selectedOrder.qteTotal" name="qteTotal" required>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label">Prix Total (FCFA)</label>
+              <input type="number" class="form-control" [(ngModel)]="selectedOrder.priceTotal" name="priceTotal" step="1" min="0" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description / Notes</label>
+            <textarea class="form-control" [(ngModel)]="selectedOrder.description" name="description" rows="3"></textarea>
+          </div>
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="orderState" [(ngModel)]="selectedOrder.state" name="state">
+            <label class="form-check-label" for="orderState">Marquer comme Livrée</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

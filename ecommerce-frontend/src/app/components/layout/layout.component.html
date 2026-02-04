@@ -1,0 +1,89 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">E-Commerce Admin</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item me-3 text-light small" *ngIf="authService.currentUser() as user">
+          <i class="bi bi-person-circle me-1"></i> {{ user.firstName }} {{ user.lastName }}
+        </li>
+        <li class="nav-item">
+          <button class="btn btn-outline-danger btn-sm" (click)="logout()">
+            <i class="bi bi-box-arrow-right"></i> Déconnexion
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid mt-5 pt-3">
+  <div class="row">
+    <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+              <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+          </li>
+
+          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+            <span>Catalogue</span>
+          </h6>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/products" routerLinkActive="active">
+              <i class="bi bi-box-seam"></i> Produits
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/categories" routerLinkActive="active">
+              <i class="bi bi-tag"></i> Catégories
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/subcategories" routerLinkActive="active">
+              <i class="bi bi-tags"></i> Sous-catégories
+            </a>
+          </li>
+
+          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+            <span>Ventes</span>
+          </h6>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/orders" routerLinkActive="active">
+              <i class="bi bi-cart"></i> Commandes
+            </a>
+          </li>
+
+          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+            <span>Utilisateurs</span>
+          </h6>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/clients" routerLinkActive="active">
+              <i class="bi bi-person"></i> Clients
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/providers" routerLinkActive="active">
+              <i class="bi bi-truck"></i> Fournisseurs
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/drivers" routerLinkActive="active">
+              <i class="bi bi-bicycle"></i> Chauffeurs
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="pt-3 pb-2 mb-3 border-bottom">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+</div>
